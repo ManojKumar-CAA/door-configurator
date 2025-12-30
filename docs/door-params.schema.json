@@ -1,0 +1,747 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DoorConfiguration",
+  "description": "Complete parametric specification for 3D door configurator",
+  "type": "object",
+  "required": [
+    "id",
+    "doorType",
+    "dimensions",
+    "frame",
+    "leafs",
+    "hardware",
+    "materials",
+    "environment"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique configuration identifier"
+    },
+    "doorType": {
+      "type": "string",
+      "enum": ["single", "double"],
+      "description": "Single or double door configuration"
+    },
+    "dimensions": {
+      "type": "object",
+      "required": ["width", "height", "frameDepth", "leafThickness"],
+      "properties": {
+        "width": {
+          "type": "number",
+          "minimum": 600,
+          "maximum": 2400,
+          "description": "Total door width in mm (single) or per leaf (double)"
+        },
+        "height": {
+          "type": "number",
+          "minimum": 1800,
+          "maximum": 3000,
+          "description": "Door height in mm"
+        },
+        "frameDepth": {
+          "type": "number",
+          "minimum": 80,
+          "maximum": 300,
+          "description": "Door frame depth (wall thickness) in mm"
+        },
+        "leafThickness": {
+          "type": "number",
+          "minimum": 35,
+          "maximum": 60,
+          "description": "Door leaf/panel thickness in mm"
+        },
+        "frameThickness": {
+          "type": "number",
+          "minimum": 40,
+          "maximum": 100,
+          "default": 60,
+          "description": "Frame profile thickness in mm"
+        }
+      }
+    },
+    "frame": {
+      "type": "object",
+      "required": ["profile", "material"],
+      "properties": {
+        "profile": {
+          "type": "string",
+          "enum": ["standard", "rebated", "flush"],
+          "description": "Frame profile type"
+        },
+        "material": {
+          "type": "string",
+          "description": "Reference to material ID"
+        },
+        "hasThreshold": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include bottom threshold"
+        },
+        "thresholdHeight": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 30,
+          "default": 15,
+          "description": "Threshold height in mm"
+        }
+      }
+    },
+    "leafs": {
+      "type": "object",
+      "required": ["count", "configuration"],
+      "properties": {
+        "count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2,
+          "description": "Number of door leafs (1 or 2)"
+        },
+        "configuration": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 2,
+          "items": {
+            "type": "object",
+            "required": ["id", "isActive", "openingDirection", "material"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "enum": ["left", "right", "primary", "secondary"],
+                "description": "Leaf identifier"
+              },
+              "isActive": {
+                "type": "boolean",
+                "description": "Active (opens) or passive (fixed until primary opens)"
+              },
+              "openingDirection": {
+                "type": "string",
+                "enum": ["inward", "outward"],
+                "description": "Opening direction relative to frame"
+              },
+              "hingeSide": {
+                "type": "string",
+                "enum": ["left", "right"],
+                "description": "Side where hinges are mounted"
+              },
+              "material": {
+                "type": "string",
+                "description": "Reference to material ID"
+              },
+              "glass": {
+                "type": "object",
+                "description": "Glass panel configuration",
+                "properties": {
+                  "enabled": {
+                    "type": "boolean",
+                    "default": false
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": ["clear", "frosted", "tinted", "decorative"],
+                    "description": "Glass type"
+                  },
+                  "position": {
+                    "type": "string",
+                    "enum": ["full", "upper", "lower", "middle", "custom"],
+                    "description": "Vertical position in leaf"
+                  },
+                  "customVerticalPosition": {
+                    "type": "object",
+                    "description": "Custom glass position (when position='custom')",
+                    "properties": {
+                      "topOffset": {
+                        "type": "number",
+                        "minimum": 100,
+                        "description": "Distance from top of leaf in mm"
+                      },
+                      "height": {
+                        "type": "number",
+                        "minimum": 100,
+                        "description": "Glass panel height in mm"
+                      }
+                    }
+                  },
+                  "horizontalInset": {
+                    "type": "number",
+                    "minimum": 50,
+                    "maximum": 200,
+                    "default": 100,
+                    "description": "Distance from leaf edges in mm"
+                  },
+                  "thickness": {
+                    "type": "number",
+                    "enum": [4, 6, 8, 10],
+                    "default": 6,
+                    "description": "Glass thickness in mm"
+                  },
+                  "material": {
+                    "type": "string",
+                    "description": "Reference to glass material ID"
+                  }
+                }
+              },
+              "embossing": {
+                "type": "object",
+                "description": "3D embossed pattern configuration",
+                "properties": {
+                  "enabled": {
+                    "type": "boolean",
+                    "default": false
+                  },
+                  "pattern": {
+                    "type": "string",
+                    "enum": [
+                      "none",
+                      "horizontal_lines",
+                      "vertical_lines",
+                      "grid",
+                      "diamond",
+                      "custom"
+                    ],
+                    "description": "Embossing pattern type"
+                  },
+                  "depth": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 10,
+                    "default": 3,
+                    "description": "Embossing depth in mm"
+                  },
+                  "customPattern": {
+                    "type": "object",
+                    "description": "Custom SVG path-based pattern",
+                    "properties": {
+                      "svgPath": {
+                        "type": "string",
+                        "description": "SVG path data"
+                      },
+                      "scale": {
+                        "type": "number",
+                        "default": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "hardware": {
+      "type": "object",
+      "required": ["hinges"],
+      "properties": {
+        "hinges": {
+          "type": "object",
+          "required": ["count", "type"],
+          "properties": {
+            "count": {
+              "type": "integer",
+              "minimum": 2,
+              "maximum": 5,
+              "description": "Number of hinges per leaf"
+            },
+            "type": {
+              "type": "string",
+              "enum": ["butt", "concealed", "piano"],
+              "description": "Hinge type"
+            },
+            "finish": {
+              "type": "string",
+              "enum": ["chrome", "brass", "brushed_steel", "black", "bronze"],
+              "default": "chrome"
+            },
+            "material": {
+              "type": "string",
+              "description": "Reference to metal material ID"
+            },
+            "placementRules": {
+              "type": "object",
+              "description": "Override default hinge placement",
+              "properties": {
+                "topOffset": {
+                  "type": "number",
+                  "minimum": 100,
+                  "maximum": 300,
+                  "default": 150,
+                  "description": "Distance from top of door in mm"
+                },
+                "bottomOffset": {
+                  "type": "number",
+                  "minimum": 100,
+                  "maximum": 300,
+                  "default": 150,
+                  "description": "Distance from bottom of door in mm"
+                },
+                "distributionMode": {
+                  "type": "string",
+                  "enum": ["even", "weighted"],
+                  "default": "even",
+                  "description": "How to distribute middle hinges"
+                }
+              }
+            }
+          }
+        },
+        "lock": {
+          "type": "object",
+          "description": "Lock/latch mechanism",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "type": {
+              "type": "string",
+              "enum": ["cylinder", "mortise", "deadbolt", "smart"],
+              "description": "Lock mechanism type"
+            },
+            "height": {
+              "type": "number",
+              "minimum": 800,
+              "maximum": 1200,
+              "default": 1050,
+              "description": "Height from floor in mm"
+            },
+            "offset": {
+              "type": "number",
+              "minimum": 40,
+              "maximum": 80,
+              "default": 60,
+              "description": "Offset from edge in mm"
+            },
+            "material": {
+              "type": "string",
+              "description": "Reference to metal material ID"
+            }
+          }
+        },
+        "handle": {
+          "type": "object",
+          "description": "Door handle/lever",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "type": {
+              "type": "string",
+              "enum": ["lever", "knob", "pull", "bar"],
+              "description": "Handle type"
+            },
+            "style": {
+              "type": "string",
+              "enum": ["modern", "traditional", "industrial", "minimal"],
+              "description": "Handle design style"
+            },
+            "height": {
+              "type": "number",
+              "minimum": 800,
+              "maximum": 1200,
+              "default": 1050,
+              "description": "Height from floor in mm (typically matches lock)"
+            },
+            "side": {
+              "type": "string",
+              "enum": ["both", "exterior", "interior"],
+              "default": "both",
+              "description": "Which side(s) have handles"
+            },
+            "material": {
+              "type": "string",
+              "description": "Reference to metal material ID"
+            }
+          }
+        },
+        "inactiveLeafBolt": {
+          "type": "object",
+          "description": "Bolt system for passive leaf in double doors",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Only applicable for double doors with inactive leaf"
+            },
+            "type": {
+              "type": "string",
+              "enum": ["flush", "surface", "automatic"],
+              "description": "Bolt mechanism type"
+            },
+            "positions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["top", "bottom", "both"]
+              },
+              "default": ["both"],
+              "description": "Where bolts are installed"
+            },
+            "topOffset": {
+              "type": "number",
+              "minimum": 100,
+              "maximum": 300,
+              "default": 200,
+              "description": "Distance from top in mm"
+            },
+            "bottomOffset": {
+              "type": "number",
+              "minimum": 100,
+              "maximum": 300,
+              "default": 200,
+              "description": "Distance from bottom in mm"
+            },
+            "material": {
+              "type": "string",
+              "description": "Reference to metal material ID"
+            }
+          }
+        }
+      }
+    },
+    "materials": {
+      "type": "object",
+      "description": "Material library references",
+      "properties": {
+        "wood": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "name", "textures"],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": ["oak", "walnut", "mahogany", "pine", "maple", "custom"]
+              },
+              "textures": {
+                "type": "object",
+                "properties": {
+                  "albedo": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "normal": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "roughness": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "metalness": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "ao": {
+                    "type": "string",
+                    "format": "uri"
+                  }
+                }
+              },
+              "pbrParams": {
+                "type": "object",
+                "properties": {
+                  "roughness": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "default": 0.7
+                  },
+                  "metalness": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "default": 0.0
+                  }
+                }
+              }
+            }
+          }
+        },
+        "metal": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "name"],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "finish": {
+                "type": "string",
+                "enum": ["polished", "brushed", "matte", "anodized"]
+              },
+              "color": {
+                "type": "string",
+                "pattern": "^#[0-9A-Fa-f]{6}$"
+              },
+              "pbrParams": {
+                "type": "object",
+                "properties": {
+                  "roughness": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "metalness": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "default": 1.0
+                  }
+                }
+              }
+            }
+          }
+        },
+        "glass": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "name"],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "transparency": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "default": 0.9
+              },
+              "ior": {
+                "type": "number",
+                "minimum": 1.0,
+                "maximum": 2.5,
+                "default": 1.5,
+                "description": "Index of refraction"
+              },
+              "tint": {
+                "type": "string",
+                "pattern": "^#[0-9A-Fa-f]{6}$"
+              },
+              "roughness": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "default": 0.0,
+                "description": "For frosted glass"
+              },
+              "texture": {
+                "type": "string",
+                "format": "uri",
+                "description": "Optional decorative pattern"
+              }
+            }
+          }
+        }
+      }
+    },
+    "environment": {
+      "type": "object",
+      "description": "Scene environment settings",
+      "properties": {
+        "lighting": {
+          "type": "string",
+          "enum": ["studio", "outdoor", "interior", "custom"],
+          "default": "studio"
+        },
+        "hdriMap": {
+          "type": "string",
+          "format": "uri",
+          "description": "Path to HDRI environment map"
+        },
+        "groundPlane": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "material": {
+              "type": "string"
+            },
+            "receiveShadow": {
+              "type": "boolean",
+              "default": true
+            }
+          }
+        },
+        "background": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["color", "gradient", "environment", "transparent"],
+              "default": "gradient"
+            },
+            "color": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$",
+              "default": "#E0E0E0"
+            }
+          }
+        }
+      }
+    },
+    "animation": {
+      "type": "object",
+      "description": "Animation behavior settings",
+      "properties": {
+        "duration": {
+          "type": "number",
+          "minimum": 0.5,
+          "maximum": 5.0,
+          "default": 1.5,
+          "description": "Door open/close duration in seconds"
+        },
+        "easing": {
+          "type": "string",
+          "enum": ["linear", "easeInOut", "easeIn", "easeOut"],
+          "default": "easeInOut"
+        },
+        "doubleDoorsSequence": {
+          "type": "string",
+          "enum": ["simultaneous", "primary_first", "secondary_first"],
+          "default": "primary_first",
+          "description": "How double doors open"
+        },
+        "sequenceDelay": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2.0,
+          "default": 0.3,
+          "description": "Delay between doors in sequential opening (seconds)"
+        },
+        "openAngle": {
+          "type": "number",
+          "minimum": 45,
+          "maximum": 120,
+          "default": 90,
+          "description": "Maximum door opening angle in degrees"
+        }
+      }
+    },
+    "performance": {
+      "type": "object",
+      "description": "Performance optimization settings",
+      "properties": {
+        "lod": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "distances": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "default": [0, 5, 15],
+              "description": "LOD switch distances in meters"
+            }
+          }
+        },
+        "shadows": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable shadow rendering"
+        },
+        "reflections": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable real-time reflections"
+        },
+        "antialias": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "constraints": {
+      "type": "object",
+      "description": "Validation constraints",
+      "properties": {
+        "minimumHinges": {
+          "type": "object",
+          "properties": {
+            "heightThreshold": {
+              "type": "number",
+              "default": 2100,
+              "description": "Height in mm above which minimum hinges increase"
+            },
+            "baseMinimum": {
+              "type": "integer",
+              "default": 2
+            },
+            "aboveThreshold": {
+              "type": "integer",
+              "default": 3
+            }
+          }
+        },
+        "glassAreaLimit": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.7,
+          "description": "Maximum glass area as fraction of leaf area"
+        },
+        "hardwareCompatibility": {
+          "type": "object",
+          "description": "Hardware type compatibility matrix",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Configuration metadata",
+      "properties": {
+        "version": {
+          "type": "string",
+          "default": "1.0.0"
+        },
+        "created": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "modified": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "author": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
