@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Door Configurator - PASS-1</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div id="app">
+        <div id="status-panel">
+            <div class="status-item">
+                <span class="status-label">🚪 Door Configurator</span>
+                <span class="status-value">PASS-1: Renderer Setup</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">FPS:</span>
+                <span id="fps-counter" class="status-value">--</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Frame Time:</span>
+                <span id="frame-time" class="status-value">-- ms</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Memory:</span>
+                <span id="memory-usage" class="status-value">-- MB</span>
+            </div>
+        </div>
+        
+        <div id="performance-warning" class="warning hidden">
+            ⚠️ Performance below target (30 FPS). Simplifying scene...
+        </div>
+        
+        <div id="controls-hint" class="hint">
+            PASS-1 Complete: Three.js renderer with 45° isometric camera and 3-point lighting
+        </div>
+    </div>
+    
+    <script type="module" src="./index.ts"></script>
+</body>
+</html>

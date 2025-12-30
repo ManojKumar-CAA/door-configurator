@@ -1,0 +1,14 @@
+{
+  "name": "door-configurator",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite"
+  },
+  "dependencies": {
+    "three": "^0.166.1"
+  },
+  "devDependencies": {
+    "vite": "^7.3.0"
+  }
+}
